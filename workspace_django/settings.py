@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'workspace_django.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "workspace",
+        "NAME": "workspace2",
     }
 }
 
