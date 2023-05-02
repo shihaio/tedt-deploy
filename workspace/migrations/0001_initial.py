@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('password', models.CharField(max_length=50)),
                 ('role', models.CharField(max_length=50)),
                 ('birthday', models.DateField()),
-                ('user_created_date', models.DateTimeField()),
+                ('user_created_date', models.DateTimeField(auto_now_add=True)), 
             ],
         ),
     ]

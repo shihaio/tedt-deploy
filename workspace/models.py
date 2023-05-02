@@ -10,7 +10,7 @@ class User (models.Model):
   password = models.CharField(max_length=50)
   role = models.CharField(max_length=50)
   birthday = models.DateField()
-  user_created_date = models.DateTimeField()
+  user_created_date = models.DateTimeField(auto_now_add=True)
 
   def __str__(self):
       return self.email
@@ -20,9 +20,9 @@ class Task (models.Model):
   status = models.CharField(max_length=25)
   description = models.CharField(max_length=255)
   imgURL = models.CharField(max_length=255)
-  created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
-  created_date = models.DateField()
-  tasked_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
+  created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_creator")
+  created_date = models.DateTimeField(auto_now_add=True)
+  tasked_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_assignedto")
 
   
   def __str__(self):
