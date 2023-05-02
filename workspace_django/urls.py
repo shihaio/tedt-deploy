@@ -23,5 +23,6 @@ import workspace
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include('workspace.urls')),
+    path('', include('workspace.urls')),
+    path('', include('accounts.urls')),
 ]

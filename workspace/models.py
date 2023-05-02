@@ -23,7 +23,6 @@ class Task (models.Model):
   created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_creator")
   created_date = models.DateTimeField(auto_now_add=True)
   tasked_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_assignedto")
-
   
   def __str__(self):
       return self.task_name
