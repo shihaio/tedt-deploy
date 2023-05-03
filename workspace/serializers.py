@@ -6,10 +6,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     model = User
     fields = (
       "id",
-      "first_name",
-      "last_name",
+      "username"
       "email",
       "password",
+      "profileURL",
       "role",
       "birthday",
       "user_created_date",
@@ -24,7 +24,7 @@ class TaskSerializer(serializers.HyperlinkedModelSerializer):
       "task_name",
       "status",
       "description",
-      "imgURL",
+      "taskImgURL",
       "created_by_id",
       "created_date",
       "tasked_to_id",

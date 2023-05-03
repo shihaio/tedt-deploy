@@ -1,3 +1,4 @@
+import email
 from django.shortcuts import render
 from .models import User, Task
 # from django.shortcuts import render, redirect
@@ -21,19 +22,23 @@ class UserList (generics.ListCreateAPIView):
 
 class TaskCreate(APIView):
     serializer_class = TaskSerializer
-    # queryset = Task.objects.all()
+    serializer_class = UserSerializer
+    queryset = Task.objects.all()
+    queryset = User.objects.all()
     # permission_classes = (permissions.AllowAny,)
     def post(self, request,format = None):
         data = request.data
         # Find person has email of "task_to_email" .get('username')
-        taskedToPersonId = User.objects.values_list("id",flat=True).get(email=request.data.get("tasked_to_email"))
+        # taskedToPersonId = User.objects.values_list("id",flat=True).get(email=request.data.get("tasked_to_email"))
+        tasksCreator = User.objects.get(id=int(data['created_by_id']))
+        tasksAssignedto = User.objects.get(email=data.get("tasked_to_email"))
         newTask = Task.objects.create(
             task_name = data.get('task_name'),
             status = data.get('status'),
             description = data.get('description'),
-            imgURL = data.get('imgURL'),
-            created_by_id = int(data.get('created_by_id')),
-            tasked_to_id = taskedToPersonId,
+            taskImgURL = data.get('taskImgURL'),
+            created_by_id = tasksCreator,
+            tasked_to_id = tasksAssignedto,
         )
         serializer = TaskSerializer(newTask, many=False) 
         return Response(serializer.data,status=status.HTTP_201_CREATED)

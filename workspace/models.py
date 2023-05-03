@@ -4,12 +4,12 @@ from django.db import models
 
 # Create your models here.
 class User (models.Model):
-  first_name = models.CharField(max_length=50)
-  last_name = models.CharField(max_length=50)
+  username = models.CharField(max_length=50,null=True)
   email = models.CharField(max_length=75)
   password = models.CharField(max_length=50)
+  profileURL = models.CharField(max_length=100,null=True)
   role = models.CharField(max_length=50)
-  birthday = models.DateField()
+  birthday = models.DateField(null=True)
   user_created_date = models.DateTimeField(auto_now_add=True)
 
   def __str__(self):
@@ -17,12 +17,12 @@ class User (models.Model):
 
 class Task (models.Model):
   task_name = models.CharField(max_length=50)
-  status = models.CharField(max_length=25)
+  status = models.CharField(max_length=25, default="PENDING")
   description = models.CharField(max_length=255)
-  imgURL = models.CharField(max_length=255)
-  created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_creator")
+  taskImgURL = models.CharField(max_length=255, null=True)
+  created_by_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_creator")
   created_date = models.DateTimeField(auto_now_add=True)
-  tasked_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_assignedto")
+  tasked_to_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_assignedto")
   
   def __str__(self):
       return self.task_name
