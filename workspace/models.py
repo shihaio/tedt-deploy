@@ -1,6 +1,7 @@
 from pyexpat import model
 from unittest.util import _MAX_LENGTH
 from django.db import models
+import json
 
 # Create your models here.
 class User (models.Model):
@@ -24,5 +25,9 @@ class Task (models.Model):
   created_date = models.DateTimeField(auto_now_add=True)
   tasked_to_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_assignedto")
   
+  def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+
   def __str__(self):
       return self.task_name

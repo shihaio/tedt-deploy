@@ -7,6 +7,7 @@ from .models import User, Task
 from django.http import JsonResponse
 from rest_framework import permissions, generics
 from .serializers import UserSerializer, TaskSerializer
+import json
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +16,7 @@ from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from .forms import TaskForm, UserForm
 
 class UserList (generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -62,17 +64,33 @@ class TaskUpdate(APIView):
         # find task in database which has id = pk
         foundTask = Task.objects.filter(id=pk).first()
 
-        # request.data._mutable=True
-        if request.data.get("tasked_to_id") is not None:
-            # find who is that person:
-            tasksAssignedto = User.objects.get(email=request.data.get("tasked_to_id"))
-            request.data["tasked_to_id"] = tasksAssignedto
-            print("=============================>request.data is", request.data)
-        
-        print("=============================>request.data is", request.data)
         serializer = TaskSerializer(foundTask, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+def NewTaskUpdate(request, pk):
+    task = Task.objects.get(id=pk)
+    # task = Task.objects.filter(id=pk).first()
+    print("==============>",task)
+
+    if request.method == "POST":
+        form = TaskForm(request.POST, instance=task)
+        print("==============>form",form.is_valid())
+        print("==============>form",form.errors)
+        if form.is_valid():
+            updatedTask = form.save()
+            print("=======> updatedTask", updatedTask)
+            print("=======> updatedTask", updatedTask)
+            print("=======> type updatedTask", type(updatedTask))
+            print("=======> updatedTask.description", updatedTask.description)
+            # jsonStr = json.dumps(updatedTask)
+            # print("=======> jsonStr", jsonStr)
+            return JsonResponse({"result":{"id":updatedTask.id,"task_name":updatedTask.task_name}})
+            # return JsonResponse(jsonStr,safe=False)
+    else:
+        form = TaskForm(instance=task)
+    return JsonResponse({"status":"Fail to update"})
+
      
