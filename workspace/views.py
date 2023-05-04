@@ -1,4 +1,5 @@
 import email
+from functools import partial
 from django.shortcuts import render
 from .models import User, Task
 # from django.shortcuts import render, redirect
@@ -21,10 +22,10 @@ class UserList (generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
 class TaskCreate(APIView):
-    serializer_class = TaskSerializer
-    serializer_class = UserSerializer
-    queryset = Task.objects.all()
-    queryset = User.objects.all()
+    # serializer_class = TaskSerializer
+    # serializer_class = UserSerializer
+    # queryset = Task.objects.all()
+    # queryset = User.objects.all()
     # permission_classes = (permissions.AllowAny,)
     def post(self, request,format = None):
         data = request.data
@@ -32,6 +33,17 @@ class TaskCreate(APIView):
         # taskedToPersonId = User.objects.values_list("id",flat=True).get(email=request.data.get("tasked_to_email"))
         tasksCreator = User.objects.get(id=int(data['created_by_id']))
         tasksAssignedto = User.objects.get(email=data.get("tasked_to_email"))
+        if tasksCreator is None:
+            return Response(
+                {'detail': 'tasksCreator not exist'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if tasksAssignedto is None:
+            return Response(
+                {'detail': 'tasksAssignedto not exist'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         newTask = Task.objects.create(
             task_name = data.get('task_name'),
             status = data.get('status'),
@@ -44,3 +56,23 @@ class TaskCreate(APIView):
         return Response(serializer.data,status=status.HTTP_201_CREATED)
 
 # update
+class TaskUpdate(APIView):
+
+    def put(self, request, pk):
+        # find task in database which has id = pk
+        foundTask = Task.objects.filter(id=pk).first()
+
+        # request.data._mutable=True
+        if request.data.get("tasked_to_id") is not None:
+            # find who is that person:
+            tasksAssignedto = User.objects.get(email=request.data.get("tasked_to_id"))
+            request.data["tasked_to_id"] = tasksAssignedto
+            print("=============================>request.data is", request.data)
+        
+        print("=============================>request.data is", request.data)
+        serializer = TaskSerializer(foundTask, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+     
