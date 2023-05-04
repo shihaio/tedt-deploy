@@ -24,15 +24,8 @@ class UserList (generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
 class TaskCreate(APIView):
-    # serializer_class = TaskSerializer
-    # serializer_class = UserSerializer
-    # queryset = Task.objects.all()
-    # queryset = User.objects.all()
-    # permission_classes = (permissions.AllowAny,)
     def post(self, request,format = None):
         data = request.data
-        # Find person has email of "task_to_email" .get('username')
-        # taskedToPersonId = User.objects.values_list("id",flat=True).get(email=request.data.get("tasked_to_email"))
         tasksCreator = User.objects.get(id=int(data['created_by_id']))
         tasksAssignedto = User.objects.get(email=data.get("tasked_to_email"))
         if tasksCreator is None:
@@ -70,27 +63,43 @@ class TaskUpdate(APIView):
             return Response(serializer.data)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
+# update YuDy
 def NewTaskUpdate(request, pk):
+    # Finding the task that has that ID
     task = Task.objects.get(id=pk)
-    # task = Task.objects.filter(id=pk).first()
-    print("==============>",task)
+    # Find the person in charge by their email 
+    personInChargeId = User.objects.get(email=request.POST["tasked_to_id"]).pk
+
+    post = request.POST.copy()
+    post["tasked_to_id"] = personInChargeId
+    request.POST = post
 
     if request.method == "POST":
         form = TaskForm(request.POST, instance=task)
-        print("==============>form",form.is_valid())
-        print("==============>form",form.errors)
+        print("form:", form.data)
         if form.is_valid():
             updatedTask = form.save()
-            print("=======> updatedTask", updatedTask)
-            print("=======> updatedTask", updatedTask)
-            print("=======> type updatedTask", type(updatedTask))
-            print("=======> updatedTask.description", updatedTask.description)
-            # jsonStr = json.dumps(updatedTask)
-            # print("=======> jsonStr", jsonStr)
             return JsonResponse({"result":{"id":updatedTask.id,"task_name":updatedTask.task_name}})
-            # return JsonResponse(jsonStr,safe=False)
     else:
         form = TaskForm(instance=task)
     return JsonResponse({"status":"Fail to update"})
 
      
+# Create Yudy
+
+def TaskCreateNew(request):
+    # Finding person in charge id
+    personInChargeId = User.objects.get(email=request.POST["tasked_to_id"]).pk
+    
+    post = request.POST.copy()
+    post["tasked_to_id"] = personInChargeId
+    request.POST = post
+    
+    if request.method == "POST":
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            newTask = form.save()
+            return JsonResponse({"result":{"id":newTask.id,"task_name":newTask.task_name}})
+    else:
+        form = TaskForm()
+    return JsonResponse({"status":"Fail to update"})

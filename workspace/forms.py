@@ -7,6 +7,7 @@ class UserForm(forms.ModelForm):
     fields = (
       "username",
       "profileURL",
+      # "nationality",
     )
     
 class TaskForm(forms.ModelForm):
