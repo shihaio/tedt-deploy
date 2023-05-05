@@ -6,7 +6,8 @@ import json
 # Create your models here.
 class User (models.Model):
   username = models.CharField(max_length=50,null=True)
-  email = models.CharField(max_length=75)
+  email = models.CharField(max_length=75) 
+  # email, maybe i can use EmailField()
   password = models.CharField(max_length=50)
   profileURL = models.CharField(max_length=100,null=True)
   role = models.CharField(max_length=50)

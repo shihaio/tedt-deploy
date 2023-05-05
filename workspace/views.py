@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .forms import TaskForm, UserForm
+from django.forms.models import model_to_dict
 
 class UserList (generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -116,12 +117,19 @@ def ViewUserTask(request, pk):
     return JsonResponse(view_list, safe=False)
 
 def ViewTaskCreated(request, pk):
-    # purpose: is to show user, who he assigned the task to
-    # what is the input?
+
     taskCreated = Task.objects.filter(created_by_id=pk)
     print("========================>", taskCreated)
-    task = Task.objects.filter(tasked_to_id=pk)
-    allTasksAssignedTo = task.values("id", "tasked_to_id")
-    view_list_recipients = list(allTasksAssignedTo)
-    print("========================>", view_list_recipients)
-    return JsonResponse(view_list_recipients, safe=False)
+    showTasksCreated = taskCreated.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
+    view_tasks_list = list(showTasksCreated)
+    print("========================>", view_tasks_list)
+    return JsonResponse(view_tasks_list, safe=False)
+
+def ViewTask(request, pk):
+
+    viewOneTask = Task.objects.get(id=pk)
+    print("========================>", viewOneTask)
+    showOneTask = viewOneTask.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
+    # view_one_tasks_list = list(showOneTask)
+    # print("========================>", view_one_tasks_list)
+    return JsonResponse(model_to_dict(showOneTask))
