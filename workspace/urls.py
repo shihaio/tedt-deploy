@@ -9,4 +9,5 @@ urlpatterns = [
   path('api/v1/task/new', views.TaskCreateNew, name="taskNew"),
   path('api/v1/task/<int:pk>', views.NewTaskUpdate, name="taskUpdate"),
   path('api/v1/task/pic/<int:pk>', views.ViewUserTask, name="viewUserTask"),
+  path('api/v1/task/createdBy/<int:pk>', views.ViewTaskCreated, name="viewTaskCreated"),
 ]

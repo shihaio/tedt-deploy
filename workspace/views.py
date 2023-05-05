@@ -115,6 +115,13 @@ def ViewUserTask(request, pk):
     print("========================>", view_list)
     return JsonResponse(view_list, safe=False)
 
-
-
-
+def ViewTaskCreated(request, pk):
+    # purpose: is to show user, who he assigned the task to
+    # what is the input?
+    taskCreated = Task.objects.filter(created_by_id=pk)
+    print("========================>", taskCreated)
+    task = Task.objects.filter(tasked_to_id=pk)
+    allTasksAssignedTo = task.values("id", "tasked_to_id")
+    view_list_recipients = list(allTasksAssignedTo)
+    print("========================>", view_list_recipients)
+    return JsonResponse(view_list_recipients, safe=False)
