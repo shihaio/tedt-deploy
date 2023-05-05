@@ -12,4 +12,5 @@ urlpatterns = [
   path('api/v1/task/pic/<int:pk>', views.ViewUserTask, name="viewUserTask"),
   path('api/v1/task/createdBy/<int:pk>', views.ViewTaskCreated, name="viewTaskCreated"),
   path('api/v1/task/delete/<int:pk>', views.DeleteOneTask, name="deleteOneTask"),
+  path('api/v1/user/read/<int:pk>', views.ViewOneUser, name="viewOneUser"),
 ]

@@ -132,6 +132,11 @@ def ViewTask(request, pk):
     print(type(viewOneTask))
     return JsonResponse(model_to_dict(viewOneTask))
 
+def ViewOneUser(request, pk):
+    viewOneUser = User.objects.get(id=pk)
+    print(type(viewOneUser))
+    return JsonResponse(model_to_dict(viewOneUser))
+
 
 # Delete Route
 def DeleteOneTask (request, pk):
