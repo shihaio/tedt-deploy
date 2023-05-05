@@ -107,7 +107,16 @@ def TaskCreateNew(request):
 # Read Route
 
 def ViewUserTask(request, pk):
-    viewTask = Task.objects.get(id=pk)
-    return JsonResponse({"result":{"id":viewTask.id,"task_name":newTask.task_name}})
+    print("========================>", pk)
+    task = Task.objects.filter(tasked_to_id=pk)
+    print("========================>", task)
+    view_list = list(task)
+    print("========================>", view_list)
+    return JsonResponse(view_list, safe=False)
+
+# def artist_list(request):
+#     artists = Artist.objects.all().values('name', 'nationality', 'photo_url') # only grab some attributes from our database
+#     artists_list = list(artists) # convert our artists to a list instead of QuerySet
+#     return JsonResponse(artists_list, safe=False) # safe=False is needed if the first parameter is not a dictionary.
 
 
