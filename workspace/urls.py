@@ -8,4 +8,5 @@ urlpatterns = [
   # path('api/v1/user/<int:pk>/delete', views.user_edit.as_view(), name="user_delete"),
   path('api/v1/task/new', views.TaskCreateNew, name="taskNew"),
   path('api/v1/task/<int:pk>', views.NewTaskUpdate, name="taskUpdate"),
+  path('api/v1/task/<int:pk>/pic', views.ViewUserTask, name="viewUserTask"),
 ]

@@ -94,7 +94,7 @@ def TaskCreateNew(request):
     post = request.POST.copy()
     post["tasked_to_id"] = personInChargeId
     request.POST = post
-    
+
     if request.method == "POST":
         form = TaskForm(request.POST)
         if form.is_valid():
@@ -103,3 +103,11 @@ def TaskCreateNew(request):
     else:
         form = TaskForm()
     return JsonResponse({"status":"Fail to update"})
+
+# Read Route
+
+def ViewUserTask(request, pk):
+    viewTask = Task.objects.get(id=pk)
+    return JsonResponse({"result":{"id":viewTask.id,"task_name":newTask.task_name}})
+
+
