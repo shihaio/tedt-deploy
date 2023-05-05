@@ -19,6 +19,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .forms import TaskForm, UserForm
 from django.forms.models import model_to_dict
 
+
 class UserList (generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -90,6 +91,7 @@ def NewTaskUpdate(request, pk):
 
 def TaskCreateNew(request):
     # Finding person in charge id
+    # Made changes here, added DICT befor GET method ===========>
     personInChargeId = User.objects.get(email=request.POST["tasked_to_id"]).pk
     
     post = request.POST.copy()
@@ -126,10 +128,20 @@ def ViewTaskCreated(request, pk):
     return JsonResponse(view_tasks_list, safe=False)
 
 def ViewTask(request, pk):
-
     viewOneTask = Task.objects.get(id=pk)
-    print("========================>", viewOneTask)
-    showOneTask = viewOneTask.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
-    # view_one_tasks_list = list(showOneTask)
-    # print("========================>", view_one_tasks_list)
-    return JsonResponse(model_to_dict(showOneTask))
+    print(type(viewOneTask))
+    return JsonResponse(model_to_dict(viewOneTask))
+
+
+# Delete Route
+def DeleteOneTask (request, pk):
+    Task.objects.get(id=pk).delete()
+    return JsonResponse({"Status":"Task is successfully deleted."})
+
+
+
+# # serialize 1 class instance
+# def artist_detail2(request,pk):
+#   artist = Artist.objects.get(id=pk)
+#   print(type(artist))
+#   return JsonResponse(model_to_dict(artist))
