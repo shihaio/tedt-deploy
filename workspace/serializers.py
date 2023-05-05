@@ -30,3 +30,6 @@ class TaskSerializer(serializers.HyperlinkedModelSerializer):
       "tasked_to_id",
     )
     depth = 1
+
+class TokenSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=255)

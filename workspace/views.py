@@ -5,67 +5,88 @@ from .models import User, Task
 # from django.shortcuts import render, redirect
 from .models import User, Task
 from django.http import JsonResponse
-from rest_framework import permissions, generics
-from .serializers import UserSerializer, TaskSerializer
+from rest_framework import permissions, generics, status
+from .serializers import UserSerializer, TaskSerializer, TokenSerializer
 import json
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .forms import TaskForm, UserForm
 from django.forms.models import model_to_dict
 
+# from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+# JWT settings
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class LoginView(generics.ListCreateAPIView):
+    """
+    POST user/login/
+    """
+
+    # This permission class will overide the global permission class setting
+    # Permission checks are always run at the very start of the view, before any other code is allowed to proceed.
+    # The permission class here is set to AllowAny, which overwrites the global class to allow anyone to have access to login.
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get("email", "")
+        password = request.data.get("password", "")
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            # login saves the user’s ID in the session,
+            # using Django’s session framework.
+            login(request, user)
+            refresh = RefreshToken.for_user(user)
+            serializer = TokenSerializer(data={
+                # using DRF JWT utility functions to generate a token
+                "token": str(refresh.access_token)
+                })
+            serializer.is_valid()
+            return Response(serializer.data)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+class RegisterUsersView(generics.ListCreateAPIView):
+    """
+    POST user/signup/
+    """
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        password = request.data.get("password", "")
+        email = request.data.get("email", "")
+        role = request.data.get("role", "")
+        if not role or not password or not email:
+            return Response(
+                data={
+                    "message": "role, password and email is required to register a user"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        new_user = User.objects.create_user(
+            role=role, password=password, email=email
+        )
+        return Response(status=status.HTTP_201_CREATED)
 
 class UserList (generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
-class TaskCreate(APIView):
-    def post(self, request,format = None):
-        data = request.data
-        tasksCreator = User.objects.get(id=int(data['created_by_id']))
-        tasksAssignedto = User.objects.get(email=data.get("tasked_to_email"))
-        if tasksCreator is None:
-            return Response(
-                {'detail': 'tasksCreator not exist'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        if tasksAssignedto is None:
-            return Response(
-                {'detail': 'tasksAssignedto not exist'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-        newTask = Task.objects.create(
-            task_name = data.get('task_name'),
-            status = data.get('status'),
-            description = data.get('description'),
-            taskImgURL = data.get('taskImgURL'),
-            created_by_id = tasksCreator,
-            tasked_to_id = tasksAssignedto,
-        )
-        serializer = TaskSerializer(newTask, many=False) 
-        return Response(serializer.data,status=status.HTTP_201_CREATED)
 
-# update
-class TaskUpdate(APIView):
 
-    def put(self, request, pk):
-        # find task in database which has id = pk
-        foundTask = Task.objects.filter(id=pk).first()
 
-        serializer = TaskSerializer(foundTask, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-# update YuDy
+# update task
 def NewTaskUpdate(request, pk):
     # Finding the task that has that ID
     task = Task.objects.get(id=pk)
@@ -87,7 +108,7 @@ def NewTaskUpdate(request, pk):
     return JsonResponse({"status":"Fail to update"})
 
      
-# Create Yudy
+# Create Task
 
 def TaskCreateNew(request):
     # Finding person in charge id
@@ -107,9 +128,9 @@ def TaskCreateNew(request):
         form = TaskForm()
     return JsonResponse({"status":"Fail to update"})
 
-# Read Route
+# Read Tasks assign to me 
 
-def ViewUserTask(request, pk):
+def ViewTaskToMe(request, pk):
     print("========================>", pk)
     task = Task.objects.filter(tasked_to_id=pk)
     print("========================>", task)
@@ -117,6 +138,8 @@ def ViewUserTask(request, pk):
     view_list = list(allTasksOfThatPIC)
     print("========================>", view_list)
     return JsonResponse(view_list, safe=False)
+
+# Read Tasks I create
 
 def ViewTaskCreated(request, pk):
 
