@@ -110,13 +110,11 @@ def ViewUserTask(request, pk):
     print("========================>", pk)
     task = Task.objects.filter(tasked_to_id=pk)
     print("========================>", task)
-    view_list = list(task)
+    allTasksOfThatPIC= task.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
+    view_list = list(allTasksOfThatPIC)
     print("========================>", view_list)
     return JsonResponse(view_list, safe=False)
 
-# def artist_list(request):
-#     artists = Artist.objects.all().values('name', 'nationality', 'photo_url') # only grab some attributes from our database
-#     artists_list = list(artists) # convert our artists to a list instead of QuerySet
-#     return JsonResponse(artists_list, safe=False) # safe=False is needed if the first parameter is not a dictionary.
+
 
 
