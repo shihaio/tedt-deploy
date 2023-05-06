@@ -19,6 +19,7 @@ urlpatterns = [
   path('api/v1/task/createdBy/<int:pk>', views.ViewTaskCreated, name="viewTaskCreated"),
   path('api/v1/task/delete/<int:pk>', views.DeleteOneTask, name="deleteOneTask"),
   path('api/v1/user/read/<int:pk>', views.ViewOneUser, name="viewOneUser"),
+  path('api/v1/user/read/<int:pk>', views.ViewOneUser, name="viewOneUser"),
   # Authentication
   path('api/v1/auth/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
   path('api/v1/auth/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),

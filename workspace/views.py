@@ -83,9 +83,6 @@ class UserList (generics.ListCreateAPIView):
     # permission_classes = (permissions.IsAuthenticated,)
 
 
-
-
-
 # update task
 def NewTaskUpdate(request, pk):
     # Finding the task that has that ID
@@ -131,41 +128,44 @@ def TaskCreateNew(request):
 # Read Tasks assign to me 
 
 def ViewTaskToMe(request, pk):
-    print("========================>", pk)
     task = Task.objects.filter(tasked_to_id=pk)
-    print("========================>", task)
     allTasksOfThatPIC= task.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
     view_list = list(allTasksOfThatPIC)
-    print("========================>", view_list)
     return JsonResponse(view_list, safe=False)
 
 # Read Tasks I create
 
 def ViewTaskCreated(request, pk):
-
     taskCreated = Task.objects.filter(created_by_id=pk)
-    print("========================>", taskCreated)
     showTasksCreated = taskCreated.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
     view_tasks_list = list(showTasksCreated)
-    print("========================>", view_tasks_list)
     return JsonResponse(view_tasks_list, safe=False)
 
+# Read one Task
 def ViewTask(request, pk):
     viewOneTask = Task.objects.get(id=pk)
-    print(type(viewOneTask))
+    print(viewOneTask)
     return JsonResponse(model_to_dict(viewOneTask))
 
+# Read one User
 def ViewOneUser(request, pk):
     viewOneUser = User.objects.get(id=pk)
-    print(type(viewOneUser))
-    return JsonResponse(model_to_dict(viewOneUser))
+    print("========================>viewOneUser",viewOneUser)
+    return JsonResponse({
+        "email":viewOneUser.email, 
+        "username": viewOneUser.username,
+        "profileURL": viewOneUser.profileURL,
+        "role": viewOneUser.role,
+        "birthday": viewOneUser.birthday,
+        "user_created_date": viewOneUser.user_created_date,
+    })
+    # return JsonResponse(model_to_dict(viewOneUser))
 
 
 # Delete Route
 def DeleteOneTask (request, pk):
     Task.objects.get(id=pk).delete()
     return JsonResponse({"Status":"Task is successfully deleted."})
-
 
 
 # # serialize 1 class instance

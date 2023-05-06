@@ -1,8 +1,9 @@
 from pyexpat import model
 from unittest.util import _MAX_LENGTH
 from django.db import models
-import json
 from django.conf import settings
+import json
+# from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -63,9 +64,9 @@ class Task (models.Model):
   status = models.CharField(max_length=25, default="PENDING")
   description = models.CharField(max_length=255)
   taskImgURL = models.CharField(max_length=255, null=True)
-  created_by_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_creator")
+  created_by_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tasks_creator")
   created_date = models.DateTimeField(auto_now_add=True)
-  tasked_to_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_assignedto")
+  tasked_to_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tasks_assignedto")
 
 
   def toJson(self):
