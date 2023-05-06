@@ -64,16 +64,15 @@ class RegisterUsersView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         password = request.data.get("password", "")
         email = request.data.get("email", "")
-        role = request.data.get("role", "")
-        if not role or not password or not email:
+        if not password or not email:
             return Response(
                 data={
-                    "message": "role, password and email is required to register a user"
+                    "message": "Password and email is required to register a user"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
         new_user = User.objects.create_user(
-            role=role, password=password, email=email
+            password=password, email=email
         )
         return Response(status=status.HTTP_201_CREATED)
 
