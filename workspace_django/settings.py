@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'workspace',
     'rest_framework',
     'accounts',
+    'corsheaders',
 ]
 
 SIMPLE_JWT = {
@@ -81,6 +82,10 @@ REST_FRAMEWORK = {
 # Customer user model
 AUTH_USER_MODEL = "workspace.User"
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000"
+]
+CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -90,6 +95,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     
 ]
 
@@ -165,3 +171,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

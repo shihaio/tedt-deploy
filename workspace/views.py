@@ -110,8 +110,8 @@ def NewTaskUpdate(request, pk):
 def TaskCreateNew(request):
     # Finding person in charge id
     # Made changes here, added DICT befor GET method ===========>
+    print("request.user:", request.user)
     personInChargeId = User.objects.get(email=request.POST["tasked_to_id"]).pk
-    
     post = request.POST.copy()
     post["tasked_to_id"] = personInChargeId
     request.POST = post
@@ -123,7 +123,7 @@ def TaskCreateNew(request):
             return JsonResponse({"result":{"id":newTask.id,"task_name":newTask.task_name}})
     else:
         form = TaskForm()
-    return JsonResponse({"status":"Fail to update"})
+    return JsonResponse({"status":"Fail to create"})
 
 # Read Tasks assign to me 
 
@@ -140,9 +140,9 @@ def ViewTaskCreated(request, pk):
     showTasksCreated = taskCreated.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
     view_tasks_list = list(showTasksCreated)
     return JsonResponse(view_tasks_list, safe=False)
-
 # Read one Task
 def ViewTask(request, pk):
+    
     viewOneTask = Task.objects.get(id=pk)
     print(viewOneTask)
     return JsonResponse(model_to_dict(viewOneTask))
@@ -150,7 +150,7 @@ def ViewTask(request, pk):
 # Read one User
 def ViewOneUser(request, pk):
     viewOneUser = User.objects.get(id=pk)
-    print("========================>viewOneUser",viewOneUser)
+    print("========================>viewOneUser",viewOneUser.tasks_assignedto)
     return JsonResponse({
         "email":viewOneUser.email, 
         "username": viewOneUser.username,
@@ -158,9 +158,15 @@ def ViewOneUser(request, pk):
         "role": viewOneUser.role,
         "birthday": viewOneUser.birthday,
         "user_created_date": viewOneUser.user_created_date,
+        # "tasks_creator": viewOneUser.tasks_creator,
+        # "tasks_assignedto": viewOneUser.tasks_assignedto,
     })
     # return JsonResponse(model_to_dict(viewOneUser))
-
+# READ 1 USER
+class ReadUserDetail (generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    # permission_classes = (permissions.IsAuthenticated,)
 
 # Delete Route
 def DeleteOneTask (request, pk):

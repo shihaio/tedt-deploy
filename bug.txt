@@ -1,0 +1,30 @@
+Current result is like this:
+{
+        "id": 29,
+        "task_name": "dadasd",
+        "status": "Pendinh",
+        "description": "react",
+        "taskImgURL": null,
+        "created_by_id": 1,
+        "tasked_to_id": 3
+    },
+    // How to populate the user in Task
+{
+        "id": 29,
+        "task_name": "dadasd",
+        "status": "Pendinh",
+        "description": "react",
+        "taskImgURL": null,
+        "created_by_id": {
+          "email": "....",
+          "profileIMG": "....",
+          "role": "....",
+          "birthday": "....",
+        },
+        "tasked_to_id": {
+          "email": "....",
+          "profileIMG": "....",
+          "role": "....",
+          "birthday": "....",
+        },
+    },
