@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import User, Task
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
@@ -35,3 +37,16 @@ class TaskSerializer(serializers.HyperlinkedModelSerializer):
 
 class TokenSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=255)
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+  @classmethod
+  def get_token(cls, user):
+    token = super().get_token(user)
+
+    token['email'] = user.email
+    token['user_id'] = str(user.id)
+    token['profileURL'] = user.profileURL
+    return token
+
+class CustomObtainTokenPairView(TokenObtainPairView):
+  serializer_class = CustomTokenObtainPairSerializer

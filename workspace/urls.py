@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (
   TokenObtainPairView,
   TokenRefreshView,
 )
-
+from .serializers import UserSerializer, TaskSerializer, TokenSerializer,CustomObtainTokenPairView
 
 urlpatterns = [
   path('api/v1/users', views.UserList.as_view(), name="user_list"),
@@ -22,8 +22,10 @@ urlpatterns = [
   path('api/v1/user/detail/<int:pk>', views.ReadUserDetail.as_view(), name="user-detail"),
   # path('api/v1/user/read/<int:pk>', views.ViewOneUser, name="viewOneUser"),
   # Authentication
-  path('api/v1/auth/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+  # path('api/v1/auth/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+  path('api/v1/auth/token/', CustomObtainTokenPairView.as_view(), name='token_obtain_pair'),
   path('api/v1/auth/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-  path('api/v1/auth/login/', views.LoginView.as_view(), name="auth-login"),
+  # path('api/v1/auth/login/', views.LoginView.as_view(), name="auth-login"),
   path('api/v1/auth/signup/', views.RegisterUsersView.as_view(), name="user-signup"),
+  path('api/v1/auth/logout/blacklist/', views.BlacklistTokenView.as_view(), name='blacklist')
 ]
