@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'corsheaders',
+    # 'rest_framework_simplejwt.token_blacklist',
+
 ]
 
 SIMPLE_JWT = {
@@ -82,10 +84,14 @@ REST_FRAMEWORK = {
 # Customer user model
 AUTH_USER_MODEL = "workspace.User"
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
-]
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000"
+# ]
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
