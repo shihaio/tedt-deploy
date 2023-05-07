@@ -129,6 +129,15 @@ def ViewTaskToMe(request, pk):
     view_list = list(allTasksOfThatPIC)
     return JsonResponse(view_list, safe=False)
 
+# Read Tasks assign to me 
+
+def ViewTaskCompleted(request):
+    completedTasks = Task.objects.filter(status="COMPLETED")
+    print("completedTasks is: ======================>", completedTasks)
+    completedTasksValue= completedTasks.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
+    view_list = list(completedTasksValue)
+    return JsonResponse(view_list, safe=False)
+
 
 
 # Read Tasks assign to me 
@@ -148,6 +157,7 @@ def ViewTaskCreated(request, pk):
     showTasksCreated = taskCreated.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
     view_tasks_list = list(showTasksCreated)
     return JsonResponse(view_tasks_list, safe=False)
+
 # Read one Task
 def ViewTask(request, pk):
     
