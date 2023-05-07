@@ -76,4 +76,11 @@ class Task (models.Model):
   def __str__(self):
       return self.task_name
 
+#   def create_task(self, task_name, description,taskImgURL,tasked_to_id,created_by_id, **other_fields):
 
+#         if not created_by_id:
+#             raise ValueError(_('You must provide person in charge'))
+
+#         task_name = self.task_name
+#         task.save()
+#         return 

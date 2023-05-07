@@ -1,12 +1,13 @@
 import email
 from functools import partial
+from urllib import request
 from django.shortcuts import render
 from .models import User, Task
 # from django.shortcuts import render, redirect
 from .models import User, Task
 from django.http import JsonResponse
 from rest_framework import permissions, generics, status
-from .serializers import UserSerializer
+from .serializers import UserSerializer, TaskSerializer
 import json
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -95,24 +96,35 @@ def NewTaskUpdate(request, pk):
 def TaskCreateNew(request):
     # Finding person in charge id
     # Made changes here, added DICT befor GET method ===========>
-    print("request.user:", request.user)
-    personInChargeId = User.objects.get(email=request.POST["tasked_to_id"]).pk
-    post = request.POST.copy()
-    post["tasked_to_id"] = personInChargeId
-    request.POST = post
+    # print("===========================>request.user:", request.user)
+    body_unicode = request.body.decode("utf-8")
+    body = json.loads(body_unicode)
+    # finding person
+    personInCharge = User.objects.get(email=body["tasked_to_id"])
+    personCreatedTask = User.objects.get(id=body["created_by_id"])
+    # post = request.POST.copy()
+    # post["tasked_to_id"] = personInChargeId
+    # request.POST = post
+    body["tasked_to_id"] = personInCharge
+    body["created_by_id"] = personCreatedTask
+    
+    data = Task.objects.create(**body)
+    print("=============================> data", data)
+    # if request.method == "POST":
+    #     form = TaskForm(body)
+    #     if form.is_valid():
+    #         newTask = form.save()
+    #         return JsonResponse({"result":{"id":newTask.id,"task_name":newTask.task_name}})
+    # else:
+    #     form = TaskForm()
+    return JsonResponse(model_to_dict(data))
 
-    if request.method == "POST":
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            newTask = form.save()
-            return JsonResponse({"result":{"id":newTask.id,"task_name":newTask.task_name}})
-    else:
-        form = TaskForm()
-    return JsonResponse({"status":"Fail to create"})
+
 
 # Read Tasks assign to me 
 
 def ViewTaskToMe(request, pk):
+    print("==========================>request.user", request.user)
     task = Task.objects.filter(tasked_to_id=pk)
     allTasksOfThatPIC= task.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
     view_list = list(allTasksOfThatPIC)
@@ -121,6 +133,7 @@ def ViewTaskToMe(request, pk):
 # Read Tasks I create
 
 def ViewTaskCreated(request, pk):
+    print("==========================>request.user", request.user)
     taskCreated = Task.objects.filter(created_by_id=pk)
     showTasksCreated = taskCreated.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
     view_tasks_list = list(showTasksCreated)
