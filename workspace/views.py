@@ -69,34 +69,36 @@ class UserList (generics.ListCreateAPIView):
     # permission_classes = (permissions.IsAuthenticated,)
 
 
-# update task
 def NewTaskUpdate(request, pk):
-    # Finding the task that has that ID
-    task = Task.objects.get(id=pk)
-    # Find the person in charge by their email 
-    personInChargeId = User.objects.get(email=request.POST["tasked_to_id"]).pk
+    #find that task inside database, find by id
+    targetTask = Task.objects.get(id=pk)
+    # decode request.body, to access what user send backend
+    body_unicode = request.body.decode("utf-8")
+    body = json.loads(body_unicode)
+    print("===========================> body", body)
 
-    post = request.POST.copy()
-    post["tasked_to_id"] = personInChargeId
-    request.POST = post
+    #Find Person, bring them to the save
+    personInCharge = User.objects.get(email=body["tasked_to_id"])
+    personCreatedTask = User.objects.get(id=body["created_by_id"])
 
-    if request.method == "POST":
-        form = TaskForm(request.POST, instance=task)
-        print("form:", form.data)
-        if form.is_valid():
-            updatedTask = form.save()
-            return JsonResponse({"result":{"id":updatedTask.id,"task_name":updatedTask.task_name}})
-    else:
-        form = TaskForm(instance=task)
-    return JsonResponse({"status":"Fail to update"})
+    # start to update Task:
+    targetTask.task_name = body["task_name"]
+    targetTask.created_by_id = personCreatedTask
+    targetTask.tasked_to_id = personInCharge
+    targetTask.status = body["status"]
+    targetTask.taskImgURL = body["taskImgURL"]
+    targetTask.description = body["description"]
+
+    targetTask.save()
+    return JsonResponse(model_to_dict(targetTask))
 
      
-# Create Task
+# CREATE TASK
 
 def TaskCreateNew(request):
     # Finding person in charge id
     # Made changes here, added DICT befor GET method ===========>
-    # print("===========================>request.user:", request.user)
+    print("===========================>request.user:", request.user)
     body_unicode = request.body.decode("utf-8")
     body = json.loads(body_unicode)
     # finding person
@@ -109,7 +111,6 @@ def TaskCreateNew(request):
     body["created_by_id"] = personCreatedTask
     
     data = Task.objects.create(**body)
-    print("=============================> data", data)
     # if request.method == "POST":
     #     form = TaskForm(body)
     #     if form.is_valid():
@@ -118,6 +119,15 @@ def TaskCreateNew(request):
     # else:
     #     form = TaskForm()
     return JsonResponse(model_to_dict(data))
+
+# Read Tasks assign to me 
+
+def ViewTaskToMe(request, pk):
+    print("==========================>request.user", request.user)
+    task = Task.objects.filter(tasked_to_id=pk)
+    allTasksOfThatPIC= task.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
+    view_list = list(allTasksOfThatPIC)
+    return JsonResponse(view_list, safe=False)
 
 
 
