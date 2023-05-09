@@ -5,10 +5,15 @@ class UserForm(forms.ModelForm):
   class Meta:
     model = User
     fields = (
-      "username",
-      "profileURL",
-      # "nationality",
+      "email",
     )
+  # def create(self, validated_data):
+  #   return User.objects.create_user(**validated_data)
+# class CustomUserChangeForm(UserChangeForm):
+
+#     class Meta:
+#         model = User
+#         fields = ('email', )
     
 class TaskForm(forms.ModelForm):
   class Meta:

@@ -17,7 +17,7 @@
 #     # This permission class will overide the global permission class setting
 #     # Permission checks are always run at the very start of the view, before any other code is allowed to proceed.
 #     # The permission class here is set to AllowAny, which overwrites the global class to allow anyone to have access to login.
-#     permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.AllowAny,)
 #     serializer_class = UserSerializer
 #     queryset = User.objects.all()
 
