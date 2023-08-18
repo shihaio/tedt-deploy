@@ -24,18 +24,18 @@ from django.contrib.auth import authenticate, login
 # JWT settings
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# AUTHENTICATE
+# REGISTER
 class RegisterUsersView(generics.ListCreateAPIView):
-    """
-    POST user/signup/
-    """
+
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
         password = request.data.get("password", "")
+        
         email = request.data.get("email", "")
+        profileURL = request.data.get("profileURL", "")
         if not password or not email:
             return Response(
                 data={
@@ -44,7 +44,7 @@ class RegisterUsersView(generics.ListCreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         new_user = User.objects.create_user(
-            password=password, email=email
+            password=password, email=email, profileURL=profileURL
         )
         return Response(status=status.HTTP_201_CREATED)
 
@@ -62,24 +62,21 @@ class BlacklistTokenView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-#  READ USERLIST
-class UserList (generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
 
 
+# UPDATE TASK
 def NewTaskUpdate(request, pk):
     #find that task inside database, find by id
     targetTask = Task.objects.get(id=pk)
+    # print(" ================> pk is:", pk)
     # decode request.body, to access what user send backend
     body_unicode = request.body.decode("utf-8")
     body = json.loads(body_unicode)
-    print("===========================> body", body)
+    # print("===========================> body", body)
 
     #Find Person, bring them to the save
     personInCharge = User.objects.get(email=body["tasked_to_id"])
-    personCreatedTask = User.objects.get(id=body["created_by_id"])
+    personCreatedTask = User.objects.get(email=body["created_by_id"])
 
     # start to update Task:
     targetTask.task_name = body["task_name"]
@@ -91,7 +88,6 @@ def NewTaskUpdate(request, pk):
 
     targetTask.save()
     return JsonResponse(model_to_dict(targetTask))
-
      
 # CREATE TASK
 
@@ -100,60 +96,37 @@ def TaskCreateNew(request):
     # Made changes here, added DICT befor GET method ===========>
     print("===========================>request.user:", request.user)
     body_unicode = request.body.decode("utf-8")
-    body = json.loads(body_unicode)
+    body = json.loads(body_unicode) 
     # finding person
     personInCharge = User.objects.get(email=body["tasked_to_id"])
     personCreatedTask = User.objects.get(id=body["created_by_id"])
-    # post = request.POST.copy()
-    # post["tasked_to_id"] = personInChargeId
-    # request.POST = post
     body["tasked_to_id"] = personInCharge
     body["created_by_id"] = personCreatedTask
-    
     data = Task.objects.create(**body)
-    # if request.method == "POST":
-    #     form = TaskForm(body)
-    #     if form.is_valid():
-    #         newTask = form.save()
-    #         return JsonResponse({"result":{"id":newTask.id,"task_name":newTask.task_name}})
-    # else:
-    #     form = TaskForm()
+
     return JsonResponse(model_to_dict(data))
 
-# Read Tasks assign to me 
 
-def ViewTaskToMe(request, pk):
-    print("==========================>request.user", request.user)
-    task = Task.objects.filter(tasked_to_id=pk)
-    allTasksOfThatPIC= task.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
-    view_list = list(allTasksOfThatPIC)
+# Read ViewTaskApproved Tasks
+
+def ViewTaskApproved(request):
+    approvedTasks = Task.objects.filter(status="APPROVED")
+    approvedTasksValue= approvedTasks.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
+    view_list = list(approvedTasksValue)
     return JsonResponse(view_list, safe=False)
 
 # Read Tasks assign to me 
 
-def ViewTaskCompleted(request):
-    completedTasks = Task.objects.filter(status="COMPLETED")
-    print("completedTasks is: ======================>", completedTasks)
-    completedTasksValue= completedTasks.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
-    view_list = list(completedTasksValue)
-    return JsonResponse(view_list, safe=False)
-
-
-
-# Read Tasks assign to me 
-
 def ViewTaskToMe(request, pk):
-    print("==========================>request.user", request.user)
-    task = Task.objects.filter(tasked_to_id=pk)
-    allTasksOfThatPIC= task.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
-    view_list = list(allTasksOfThatPIC)
+    task = Task.objects.filter(tasked_to_id=pk).exclude(status="APPROVED")
+    tasksToPersonInCharge = task.values('id', 'task_name', 'status', 'description','taskImgURL','created_by_id','tasked_to_id')
+    view_list = list(tasksToPersonInCharge)
     return JsonResponse(view_list, safe=False)
 
 # Read Tasks I create
 
 def ViewTaskCreated(request, pk):
-    print("==========================>request.user", request.user)
-    taskCreated = Task.objects.filter(created_by_id=pk)
+    taskCreated = Task.objects.filter(created_by_id=pk).exclude(status="APPROVED")
     showTasksCreated = taskCreated.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
     view_tasks_list = list(showTasksCreated)
     return JsonResponse(view_tasks_list, safe=False)
@@ -176,24 +149,52 @@ def ViewOneUser(request, pk):
         "role": viewOneUser.role,
         "birthday": viewOneUser.birthday,
         "user_created_date": viewOneUser.user_created_date,
-        # "tasks_creator": viewOneUser.tasks_creator,
-        # "tasks_assignedto": viewOneUser.tasks_assignedto,
     })
-    # return JsonResponse(model_to_dict(viewOneUser))
-# READ 1 USER
-class ReadUserDetail (generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
 
-# Delete Route
+# Update One User Information
+def UpdateOneUser(request, pk):
+    targetUser = User.objects.get(id=pk)
+
+    body_unicode = request.body.decode("utf-8")
+    body = json.loads(body_unicode)
+    targetUser.profileURL = body["profileURL"]
+    targetUser.role = body["role"]
+    targetUser.save()
+    return JsonResponse(model_to_dict(targetUser))
+
+# Read Email List Exclude Email of Owner
+def ViewEmailList(request, pk):
+    emails = User.objects.exclude(id=pk).values('email')
+    view_list = list(emails)
+    return JsonResponse(view_list, safe=False)
+
+# Delete Task
 def DeleteOneTask (request, pk):
     Task.objects.get(id=pk).delete()
     return JsonResponse({"Status":"Task is successfully deleted."})
 
+# Delete User
+def DeleteOneUser (request, pk):
+    User.objects.get(id=pk).delete()
+    return JsonResponse({"Status":"User is successfully deleted."})
 
-# # serialize 1 class instance
-# def artist_detail2(request,pk):
-#   artist = Artist.objects.get(id=pk)
-#   print(type(artist))
-#   return JsonResponse(model_to_dict(artist))
+#  READ USERLIST 
+def UserList(request):
+    readUsers= User.objects.values(     
+      "id",
+      "username",
+      "email",
+      "password",
+      "profileURL",
+      "role",
+      "birthday",
+      "user_created_date", )
+    view_list = list(readUsers)
+    return JsonResponse(view_list, safe=False)
+
+#  READ TASKLIST
+def TaskList(request):
+    tasks = Task.objects.values('id', 'task_name', 'status','description','taskImgURL','created_by_id','tasked_to_id')
+    view_list = list(tasks)
+    return JsonResponse(view_list, safe=False)
+
