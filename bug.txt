@@ -28,3 +28,8 @@ Current result is like this:
           "birthday": "....",
         },
     },
+
+
+    - pipenv install django
+- pipenv shell : to launching subshell in virtual environment
+- python3 manage.py runserver
