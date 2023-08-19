@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-)-r7@1(a=^8tfbml_f!#4dx15ymyl@9_f7s(#1%fhs&s!rb7!b
 DEBUG = True
 
 # ALLOWED_HOSTS = [],
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'eunoia-singapore.herokuapp.com', '.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'workspacebe2.onrender.com', '.vercel.app', '.onrender.com']
 
 
 
