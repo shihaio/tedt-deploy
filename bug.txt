@@ -35,3 +35,4 @@ Current result is like this:
 - pip list : show all package have in file
 - migrate: python3 manage.py migrate
 - create superuser: python3 manage.py createsuperuser
+DATABASE_URL=postgres://workspacedb_user:GJTxOzKCVkjTtqHunNhFfHfLF45q8nUm@dpg-cjfq3qfut75s73a1e3o0-a.oregon-postgres.render.com/workspacedb
