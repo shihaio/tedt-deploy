@@ -30,7 +30,9 @@ SECRET_KEY = 'django-insecure-)-r7@1(a=^8tfbml_f!#4dx15ymyl@9_f7s(#1%fhs&s!rb7!b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"],
+# ALLOWED_HOSTS = [],
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'eunoia-singapore.herokuapp.com', '.vercel.app']
+
 
 
 # Application definition
@@ -88,17 +90,19 @@ REST_FRAMEWORK = {
 # Customer user model
 AUTH_USER_MODEL = "workspace.User"
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000"
-# ]
 # CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000"
+]
+
 # CORS_ORIGIN_WHITELIST = (
 #     'http://localhost:3000',
 # )
 
 # Zoe:
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
