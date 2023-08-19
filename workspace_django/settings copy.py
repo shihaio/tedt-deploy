@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from pickle import TRUE
 import environ
 
 env = environ.Env()
@@ -28,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)-r7@1(a=^8tfbml_f!#4dx15ymyl@9_f7s(#1%fhs&s!rb7!b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = TRUE
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -91,8 +92,8 @@ AUTH_USER_MODEL = "workspace.User"
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000"
 # ]
-# CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
 )
@@ -132,7 +133,6 @@ WSGI_APPLICATION = 'workspace_django.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 # ------------------ DB of Django ( defaut)
 # DATABASES = {
 #     "default": {

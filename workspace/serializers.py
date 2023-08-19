@@ -15,8 +15,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
       "role",
       "birthday",
       "user_created_date",
-      "tasks_creator",
-      "tasks_assignedto"
     )
     depth = 1
 
@@ -47,6 +45,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     token['user_id'] = str(user.id)
     token['profileURL'] = user.profileURL
     token['role'] = user.role
+    token ['is_admin'] = user.is_admin
     return token
 
 class CustomObtainTokenPairView(TokenObtainPairView):
