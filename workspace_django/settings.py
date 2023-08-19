@@ -88,9 +88,9 @@ REST_FRAMEWORK = {
 # Customer user model
 AUTH_USER_MODEL = "workspace.User"
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000"
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000"
+]
 # CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_ALLOW_ALL = False
 # CORS_ORIGIN_WHITELIST = (
@@ -98,8 +98,8 @@ AUTH_USER_MODEL = "workspace.User"
 # )
 
 # Zoe:
-CORS_ALLOW_ALL_ORIGINS = True
-
+# CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
