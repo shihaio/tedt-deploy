@@ -95,7 +95,8 @@ AUTH_USER_MODEL = "workspace.User"
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    'https://workspace-4u.netlify.app'
 ]
 
 # CORS_ORIGIN_WHITELIST = (
