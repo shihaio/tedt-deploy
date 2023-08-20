@@ -32,7 +32,7 @@ DEBUG = False
 
 # ALLOWED_HOSTS = [],
 # ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'workspacebe2.onrender.com', '.vercel.app', '.onrender.com', '.netlify.app', 'workspace-4u.netlify.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'workspacebe2.onrender.com', '.vercel.app', '.onrender.com', '.netlify.app', 'workspace-4u.netlify.app', 'https://workspace-4u.netlify.app']
 
 
 
